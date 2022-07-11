@@ -58,14 +58,17 @@ class MultilingualTranslator:
         main_sentences = content.find_all('div', {'class': 'src'})
         tr_sentences = content.find_all('div', {'class': 'trg'})
 
+        if not words:
+            return 0
         self.translated_words = self.content_getter(words)
         self.main_sentences = self.content_getter(main_sentences)
         self.translated_sentences = self.content_getter(tr_sentences)
 
-    # GETTING CONTENT OYT OF ELEMENTS
+    # GETTING CONTENT OUT OF ELEMENTS
     @staticmethod
     def content_getter(data):
-        return [el.text for el in data]
+        if data:
+            return [el.text for el in data]
 
     # GETTING RID OF UNNECESSARY CHARS
     @staticmethod
@@ -76,8 +79,9 @@ class MultilingualTranslator:
         return [el for el in output if el != '']
 
     # PRINTING WORDS ON NEW LINES
-    @staticmethod
-    def words_printer(words_list):
+    def words_printer(self, words_list):
+        print()
+        print(f'{self.chosen_lang.capitalize()} Translations:')
         if len(words_list) > 5:
             for i in range(5):
                 print(words_list[i].strip())
@@ -102,9 +106,9 @@ class MultilingualTranslator:
             print(f'{i + 1}: {lang}')
         self.data_collector()
         self.response_getter()
-        print()
-        print(f'{self.chosen_lang.capitalize()} Translations:')
-        self.response_processor(self.response)
+        if self.response_processor(self.response) == 0:
+            print('Something went wrong. Check your input and try again.')
+            return self.data_collector()
         self.words_printer(self.translated_words)
         print(f'{self.chosen_lang.capitalize()} Examples:')
         self.sentences_printer(self.data_polisher(self.main_sentences), self.data_polisher(self.translated_sentences))
